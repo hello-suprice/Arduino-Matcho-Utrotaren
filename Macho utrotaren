@@ -1,0 +1,50 @@
+#include "thingProperties.h"
+#define ledPin 0
+#define buzzerPin 13
+const int R0 = 100000;
+const int B = 4275;
+
+void setup() {
+  // Initiera egenskaper definierade i thingProperties.h
+  initProperties();
+  // Anslut till Arduino IoT Cloud
+  ArduinoCloud.begin(ArduinoIoTPreferredConnection);
+  // Ställ in LED- och buzzerstiften som utgång
+  pinMode(ledPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+   // Ställ in debugmeddelandenivån och skriv ut debuginfo
+  setDebugMessageLevel(2);
+  ArduinoCloud.printDebugInfo();
+}
+void loop() {
+  ArduinoCloud.update();
+  int a = analogRead(A3);
+  // Beräkna motståndet för termistorn
+  float R = 1023.0/a-1.0;
+  R = R0*R;
+  // Konvertera motståndet till temperatur med hjälp av databladsformeln
+  Temperatursensor = 1.0/(log(R/R0)/B+1/298.15)-273.15; 
+  
+  // Om LED är på
+  if(LED==1){
+    digitalWrite(ledPin, HIGH);
+    
+    if(Temperatursensor > TempThreshold) {
+    digitalWrite(buzzerPin, HIGH); 
+  } else {
+    digitalWrite(buzzerPin, LOW); 
+  }
+    
+  }
+  else{
+    digitalWrite(ledPin, LOW);
+    digitalWrite(buzzerPin, LOW);
+  }
+
+}
+void onLEDChange() {
+}
+void onBuzzerChange()  {
+}
+void onTempThresholdChange()  {
+}
